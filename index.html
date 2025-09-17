@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Basketball Scorecard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container py-4">
+      <h1 class="text-center mb-3">🏀 Basketball Scorecard</h1>
+
+      <div class="row g-3">
+        <!-- Left panel: Home team -->
+        <div class="col-lg-5">
+          <div class="card team-card" id="team1Card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <input id="team1Name" class="form-control form-control-lg team-name" value="Home" />
+                <div class="ms-2 text-end">
+                  <div class="h1 mb-0" id="score1">0</div>
+                  <small class="text-muted">Points</small>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap mb-2">
+                <button class="btn btn-primary btn-lg" onclick="addPoints(1,1)">+1</button>
+                <button class="btn btn-primary btn-lg" onclick="addPoints(1,2)">+2</button>
+                <button class="btn btn-primary btn-lg" onclick="addPoints(1,3)">+3</button>
+                <button class="btn btn-outline-primary btn-lg" onclick="addFoul(1)">Foul +1</button>
+                <button class="btn btn-outline-secondary btn-lg" onclick="useTimeout(1)">Timeout</button>
+                <button class="btn btn-warning btn-lg" onclick="undo()">Undo</button>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                  <div>Fouls: <span id="fouls1">0</span></div>
+                  <div>Timeouts left: <span id="timeouts1">5</span></div>
+                </div>
+
+                <div class="text-end">
+                  <button class="btn btn-sm btn-outline-dark mb-1" onclick="togglePossession(1)"><span id="pos1">●</span> Possession</button>
+                  <div class="small text-muted">Coach Notes</div>
+                  <textarea id="notes1" class="form-control form-control-sm mt-1" rows="2" placeholder="Notes..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle panel: Clock & Period -->
+        <div class="col-lg-2">
+          <div class="card clock-card text-center">
+            <div class="card-body">
+              <div class="h2 mb-1">Period</div>
+              <div class="h1 mb-3" id="periodDisplay">1</div>
+
+              <div class="h2 mb-1">Clock</div>
+              <div class="display-4 mb-2" id="clockDisplay">12:00</div>
+
+              <div class="d-grid gap-2">
+                <div class="btn-group" role="group">
+                  <button class="btn btn-success" id="startPauseBtn" onclick="startPauseClock()">Start</button>
+                  <button class="btn btn-secondary" onclick="resetClock()">Reset</button>
+                </div>
+
+                <select id="periodLength" class="form-select form-select-sm">
+                  <option value="720">12:00 (Pro)</option>
+                  <option value="600">10:00</option>
+                  <option value="480">8:00 (Youth)</option>
+                  <option value="300">5:00 (Quick)</option>
+                </select>
+
+                <div class="btn-group w-100" role="group">
+                  <button class="btn btn-outline-primary" onclick="prevPeriod()">Prev</button>
+                  <button class="btn btn-outline-primary" onclick="nextPeriod()">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3 text-center">
+            <div class="card-body">
+              <div>Possession: <strong id="possessionIndicator">Home</strong></div>
+              <div class="mt-2">Play Log</div>
+              <textarea id="playLog" class="form-control form-control-sm mt-2" rows="6" readonly></textarea>
+              <div class="d-flex gap-2 mt-2">
+                <button class="btn btn-outline-secondary btn-sm w-50" onclick="exportLog()">Export</button>
+                <button class="btn btn-outline-danger btn-sm w-50" onclick="clearLog()">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right panel: Away team -->
+        <div class="col-lg-5">
+          <div class="card team-card" id="team2Card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="me-2 text-start">
+                  <div class="h1 mb-0" id="score2">0</div>
+                  <small class="text-muted">Points</small>
+                </div>
+                <input id="team2Name" class="form-control form-control-lg team-name text-end" value="Others" />
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap mb-2 justify-content-end">
+                <button class="btn btn-primary btn-lg" onclick="addPoints(2,1)">+1</button>
+                <button class="btn btn-primary btn-lg" onclick="addPoints(2,2)">+2</button>
+                <button class="btn btn-primary btn-lg" onclick="addPoints(2,3)">+3</button>
+                <button class="btn btn-outline-primary btn-lg" onclick="addFoul(2)">Foul +1</button>
+                <button class="btn btn-outline-secondary btn-lg" onclick="useTimeout(2)">Timeout</button>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                  <div class="text-start">Fouls: <span id="fouls2">0</span></div>
+                  <div class="text-start">Timeouts left: <span id="timeouts2">5</span></div>
+                </div>
+
+                <div class="text-start">
+                  <button class="btn btn-sm btn-outline-dark mb-1" onclick="togglePossession(2)"><span id="pos2">○</span> Possession</button>
+                  <div class="small text-muted">Coach Notes</div>
+                  <textarea id="notes2" class="form-control form-control-sm mt-1" rows="2" placeholder="Notes..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom controls -->
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <div class="d-flex gap-2">
+            <button class="btn btn-danger" onclick="endGame()">End Game</button>
+            <button class="btn btn-outline-danger" onclick="fullReset()">Full Reset</button>
+            <button class="btn btn-outline-success" onclick="newGame()">New Game</button>
+            <button class="btn btn-outline-secondary" onclick="toggleLeadingHighlight()">Toggle Leader Highlight</button>
+          </div>
+        </div>
+
+        <div class="col-md-6 text-end">
+          <div class="form-check form-switch d-inline-block">
+            <input class="form-check-input" type="checkbox" id="soundToggle" checked>
+            <label class="form-check-label" for="soundToggle">Sound</label>
+          </div>
+          <div class="form-check form-switch d-inline-block ms-3">
+            <input class="form-check-input" type="checkbox" id="autoNextPeriod" >
+            <label class="form-check-label" for="autoNextPeriod">Auto Next Period</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal fade" id="winnerModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Game Result</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="winnerText"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="newGame()" data-bs-dismiss="modal">Start New Game</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  </body>
+</html>
